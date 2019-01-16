@@ -11,7 +11,7 @@ variable "instances_type" {
 }
 
 variable "name" {
-  default = "my"
+  default = "CRM-C"
 }
 
 # Use with bash scripts
