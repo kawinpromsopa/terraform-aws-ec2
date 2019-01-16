@@ -17,9 +17,9 @@ resource "aws_instance" "cachet" {
 
   tags {
     Name      = "${var.name}-cachet"
-    Component = "app"
+    Component = "cachet-mysql"
     Customer  = "${var.name}"
-    Project   = "app"
+    Project   = "stack-monitoring-page-system"
   }
 
   lifecycle {
