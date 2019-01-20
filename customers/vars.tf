@@ -21,7 +21,7 @@ variable "s3_bucket_name" {
 }
 
 variable "base_ami" {
-  default = "ami-a6bec64c"
+  default = "ami-0006260d96ccf6695"
 }
 
 variable "cachet_instance_type" {
