@@ -1,12 +1,10 @@
 variable "vpc_cidr" {}
 
 variable "instances_ami" {
-  description = "Amazon Machine Image for the Instance"
-  default = "ami-21bdc5cb"
+  default = "ami-0006260d96ccf6695"
 }
 
 variable "instances_type" {
-  description = "type of instances to provision"
   default = "t2.small"
 }
 
@@ -33,10 +31,6 @@ variable "key_name" {
 
 variable "s3_bucket_name" {
   default = ""
-}
-
-variable "base_ami" {
-  default = "ami-a6bec64c"
 }
 
 variable "cachet_instance_type" {
