@@ -1,9 +1,10 @@
 .terraform
-.terraform.tfstate.lock.info
-terraform.tfstate*
+.terraform.*
+terraform.*
 errored.tfstate*
 *.retry
 *.tfplan
 *.tfstate
 *.tfstate.backup
 *.backup
+*.hide

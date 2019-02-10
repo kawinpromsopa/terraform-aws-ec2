@@ -1,0 +1,9 @@
+#!/bin/bash
+set -xe
+
+CUSTOMER="$1"
+shift
+[ `terraform workspace show` != "$CUSTOMER" ] && terraform workspace select "$CUSTOMER"
+terraform destroy -var-file=customer_vars/"$CUSTOMER".tfvars "$@"
+
+

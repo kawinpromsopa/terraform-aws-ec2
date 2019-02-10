@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = ""
+    region = "ap-southeast-1"
+    key    = ""
+  }
+}
+
 provider "aws" {
   region = "${var.region}"
 }
@@ -7,14 +15,15 @@ provider "aws" {
   alias  = "ap-southeast-1"
 }
 
-module "cachet" {
+module "aboutopsio" {
   source                      = "../modules"
-# customer                    = "${local.customer}" # Use with bash scripts
+  customer                    = "${local.customer}"
   region                      = "${var.region}"
-  availability_zones          = "${var.availability_zones}"
+  availability_zone           = "${var.availability_zone}"
   vpc_cidr                    = "${var.vpc_cidr}"
   key_name                    = "${var.key_name}"
-  cachet_instance_type        = "${var.cachet_instance_type}"
+  default_instances_type      = "${var.default_instances_type}"
+  cachet_instances_type       = "${var.cachet_instances_type}"
   base_ami                    = "${var.base_ami}"
 
   providers {
@@ -23,3 +32,6 @@ module "cachet" {
   }
 }
 
+#output "cachet_instances_type" {
+#  value = "${aws_instance.cachet.public_ip}"
+#}
