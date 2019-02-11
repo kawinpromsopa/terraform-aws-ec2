@@ -22,11 +22,11 @@ module "aboutopsio" {
   availability_zone           = "${var.availability_zone}"
   vpc_cidr                    = "${var.vpc_cidr}"
   key_name                    = "${var.key_name}"
-  web_1_instances_type        = "${var.web_1_instances_type}"
-  web_2_instances_type        = "${var.web_2_instances_type}"
-  mairadb_1_instances_type    = "${var.mairadb_1_instances_type}"
-  mairadb_2_instances_type    = "${var.mairadb_2_instances_type}"
-  storage_instances_type      = "${var.storage_instances_type}"
+#  web_1_instances_type        = "${var.web_1_instances_type}"
+#  web_2_instances_type        = "${var.web_2_instances_type}"
+#  mairadb_1_instances_type    = "${var.mairadb_1_instances_type}"
+#  mairadb_2_instances_type    = "${var.mairadb_2_instances_type}"
+#  storage_instances_type      = "${var.storage_instances_type}"
   base_ami                    = "${var.base_ami}"
 
   providers {

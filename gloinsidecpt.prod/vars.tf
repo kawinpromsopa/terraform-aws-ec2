@@ -39,23 +39,23 @@ variable "base_ami" {
 }
 
 varible "web_1_instances_type" {
-  default = "t2.small"
+  default = ""
 } 
 
 varible "web_2_instances_type" {
-  default = "t2.small"
+  default = ""
 } 
 
 varible "mairadb_1_instances_type" {
-  default = "t2.medium"
+  default = ""
 } 
 
 varible "mairadb_2_instances_type" {
-  default = "t2.medium"
+  default = ""
 } 
 
 varible "storage_instances_type" {
-  default = "t2.small"
+  default = ""
 } 
 
 
