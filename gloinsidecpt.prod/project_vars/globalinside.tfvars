@@ -1,0 +1,7 @@
+vpc_cidr = "10.1.0.0/16"
+s3_bucket_name = ""
+web_1_instances_type = "t2.small"
+web_2_instances_type = "t2.small"
+mairadb_1_instances_type = "t2.medium"
+mariadb_2_instances_type = "t2.medium"
+storage_instances_type = "t2.small"
