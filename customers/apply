@@ -1,8 +1,0 @@
-#!/bin/bash
-set -xe
-
-CUSTOMER="$1"
-shift
-[ `terraform workspace show` != "$CUSTOMER" ] && terraform workspace select "$CUSTOMER"
-terraform apply -var-file=customer_vars/"$CUSTOMER".tfvars "$@"
-
