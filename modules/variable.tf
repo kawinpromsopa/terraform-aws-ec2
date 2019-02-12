@@ -1,6 +1,6 @@
-##
+##################
 # Public variables
-##
+##################
 
 locals {
   default_s3_bucket_name      = "${var.customer}"
@@ -25,7 +25,7 @@ variable "force_destroy_s3" {
 }
 
 variable "base_ami" {
-  default = "ami-0006260d96ccf6695"
+  default = "ami-0b6275906590ad784"
 }
 
 variable "default_instances_type" {
@@ -36,8 +36,28 @@ variable "cachet_instances_type" {
   default = "t2.small"
 }
 
+variable "web_1_instances_type" {
+  default = "t2.small"
+} 
+
+variable "web_2_instances_type" {
+  default = "t2.small"
+} 
+
+variable "mairadb_1_instances_type" {
+  default = "t2.medium"
+} 
+
+variable "mairadb_2_instances_type" {
+  default = "t2.medium"
+} 
+
+variable "storage_instances_type" {
+  default = "t2.small"
+} 
+
 variable "name" {
-  default = "My"
+  default = ""
 }
 
 variable "region" {
@@ -48,4 +68,7 @@ variable "availability_zone" {
   default = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]
 }
 
-
+variable "name_prefix" {
+  default     = "prod"
+  description = "prefix of name tag"
+}

@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket = "terraform-state.prod"
     region = "ap-southeast-1"
-    key    = "globalinsidecpt.tfstate"
+    key    = "globalinsidecpt-prod.tfstate"
   }
 }
 
@@ -35,6 +35,3 @@ module "aboutopsio" {
   }
 }
 
-#output "cachet_instances_type" {
-#  value = "${aws_instance.cachet.public_ip}"
-#}
