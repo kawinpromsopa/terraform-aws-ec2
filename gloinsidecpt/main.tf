@@ -28,6 +28,8 @@ module "aboutopsio" {
 #  mairadb_2_instances_type    = "${var.mairadb_2_instances_type}"
 #  storage_instances_type      = "${var.storage_instances_type}"
   base_ami                    = "${var.base_ami}"
+  s3_bucket_name              = "${var.s3_bucket_name}"
+#  s3_secret_bucket_name       = "eko-secret-bucket"
 
   providers {
     # for object in s3 secret bucket

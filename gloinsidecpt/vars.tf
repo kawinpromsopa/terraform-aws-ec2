@@ -56,7 +56,7 @@ variable "availability_zone" {
 ################
 
 variable "key_name" {
-  default = ""
+  default = "aboutops.io-prod"
 }
 
 variable "base_ami" {
