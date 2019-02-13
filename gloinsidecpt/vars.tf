@@ -28,11 +28,11 @@ variable "web_2_instances_type" {
   default = "t3.nano"
 } 
 
-variable "mairadb_1_instances_type" {
+variable "mariadb_1_instances_type" {
   default = "t3.nano"
 } 
 
-variable "mairadb_2_instances_type" {
+variable "mariadb_2_instances_type" {
   default = "t3.nano"
 } 
 
