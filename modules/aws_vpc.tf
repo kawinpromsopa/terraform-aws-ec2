@@ -5,6 +5,7 @@ resource "aws_vpc" "main" {
 
   tags {
     Name = "${var.name}"
+    Customer = "${var.customer}"
   }
 }
 
@@ -13,6 +14,7 @@ resource "aws_internet_gateway" "main" {
 
   tags {
     Name = "${var.name}"
+    Customer = "${var.customer}"
   }
 }
 
@@ -21,6 +23,11 @@ resource "aws_subnet" "a0" {
   cidr_block              = "${cidrsubnet(var.vpc_cidr, 2, 0)}"
   map_public_ip_on_launch = true
   availability_zone       = "${element(var.availability_zone, 0)}"
+
+  tags {
+    Name = "${var.name}"
+    Customer = "${var.customer}"
+  }
 }
 
 resource "aws_subnet" "b0" {
@@ -28,6 +35,11 @@ resource "aws_subnet" "b0" {
   cidr_block              = "${cidrsubnet(var.vpc_cidr, 2, 1)}"
   map_public_ip_on_launch = true
   availability_zone       = "${element(var.availability_zone, 1)}"
+
+  tags {
+    Name = "${var.name}"
+    Customer = "${var.customer}"
+  }
 }
 
 resource "aws_subnet" "c0" {
@@ -35,6 +47,11 @@ resource "aws_subnet" "c0" {
   cidr_block              = "${cidrsubnet(var.vpc_cidr, 2, 2)}"
   map_public_ip_on_launch = true
   availability_zone       = "${element(var.availability_zone, 2)}"
+
+  tags {
+    Name = "${var.name}"
+    Customer = "${var.customer}"
+  }
 }
 
 resource "aws_default_route_table" "main" {
@@ -47,6 +64,7 @@ resource "aws_default_route_table" "main" {
 
   tags {
     Name = "${var.name}"
+    Customer = "${var.customer}"
   }
 }
 

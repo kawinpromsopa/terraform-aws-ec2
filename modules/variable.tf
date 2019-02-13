@@ -29,11 +29,11 @@ variable "base_ami" {
 }
 
 variable "default_instances_type" {
-  default = "t2.small"
+  default = "t2.nano"
 }
 
 variable "cachet_instances_type" {
-  default = "t2.small"
+  default = "t2.nano"
 }
 
 variable "web_1_instances_type" {
@@ -44,11 +44,11 @@ variable "web_2_instances_type" {
   default = "t2.small"
 } 
 
-variable "mairadb_1_instances_type" {
+variable "mariadb_1_instances_type" {
   default = "t2.medium"
 } 
 
-variable "mairadb_2_instances_type" {
+variable "mariadb_2_instances_type" {
   default = "t2.medium"
 } 
 

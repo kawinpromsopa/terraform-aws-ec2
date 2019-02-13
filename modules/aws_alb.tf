@@ -56,6 +56,21 @@ resource "aws_alb_listener" "http" {
   }
 }
 
+resource "aws_lb_target_group_attachment" "default_http" {
+  target_group_arn = "${aws_alb_target_group.default.arn}"
+  target_id        = "${aws_instance.web1.id}"
+  port             = 80
+}
+
+
+resource "aws_lb_target_group_attachment" "http_http" {
+  target_group_arn = "${aws_alb_target_group.http.arn}"
+  target_id        = "${aws_instance.web1.id}"
+  port             = 80
+}
+
+
+
 ########################################## 
 # must have "lb_ssl_certificate_id" on aws
 ########################################## 

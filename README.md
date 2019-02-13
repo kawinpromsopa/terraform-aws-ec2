@@ -18,6 +18,5 @@ Create a workspace for separate Customer following:
     ./terraform-aws-ec2/terraform_apply <cusotmer>
 
 
-# *Note: When you destroy instances with shell script "./terraform_destroy" or "terraform destroy" command, You must to delete state on aws s3 too
-
+### *Note: When you destroy instances with shell script "./terraform_destroy" or "terraform destroy" command, You must to delete state on aws s3 too
 
