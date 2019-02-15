@@ -1,0 +1,32 @@
+--- # defaults file for mariadb-galera-cluster
+
+# Mariadb_keys_server
+mariadb_apt_keys_sv: "hkp://keyserver.ubuntu.com:80"
+
+# Mariadb_keys
+mariadb_apt_keys: ['0xcbcb082a1bb943db', '0xF1656F24C74CD1D8']
+
+# Repository mariadb-galera-cluster
+repos_packages: 'deb [arch=amd64,i386,ppc64el] http://ftp.utexas.edu/mariadb/repo/10.1/ubuntu xenial main'
+
+# Packages mariadb
+packages: mariadb-server
+
+# Mariadb apt cache update time
+mariadb_apt_cache_time: "86400"
+
+# IP_address mariadb node
+ip_mariadb_node_1: "10.130.18.75"
+ip_mariadb_node_2: "10.130.72.42"
+ip_mariadb_node_3: ""
+
+# IP_address mariadb node name
+ip_mariadb_node_name_1: "mariadb1-globalinsidecpt"
+ip_mariadb_node_name_2: "mariadb2-globalinsidecpt"
+ip_mariadb_node_name_3: ""
+
+# [local] Path configuration mariadb.cnf
+lc_mariadb_cnf: "galera.cnf.j2"
+
+# [local] Path configuration mariadb.cnf
+sv_mariadb_cnf: "/etc/mysql/conf.d/galera.cnf"

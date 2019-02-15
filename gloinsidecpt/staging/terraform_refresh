@@ -4,6 +4,4 @@ set -xe
 CUSTOMER="$1"
 shift
 [ `terraform workspace show` != "$CUSTOMER" ] && terraform workspace select "$CUSTOMER"
-terraform destroy -var-file=project_vars/"$CUSTOMER".tfvars "$@"
-
-
+terraform refresh -var-file=../project_vars/"$CUSTOMER".tfvars "$@"

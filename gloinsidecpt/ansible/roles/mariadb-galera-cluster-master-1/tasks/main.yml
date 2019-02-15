@@ -1,0 +1,94 @@
+--- # tasks file for mariadb-galera-cluster
+
+- name: Add the mariaDB repository key
+  apt_key:
+    id: "{{ item }}"
+    keyserver: "{{ mariadb_apt_keys_sv }}"
+    state: "present"
+  with_items: "{{ mariadb_apt_keys }}"
+
+- name: Add the mariaDB repository and update the APT 
+  apt_repository:
+    repo: "{{ repos_packages }}"
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: Install mariadb-server
+  package:
+    name: "{{ packages }}"
+    state: present
+    update_cache: True
+    cache_valid_time: '{{ mariadb_apt_cache_time }}'
+
+- name: Copy Configuration for "mariadb.cnf" to servers
+  template:
+    src: "{{ lc_mariadb_cnf }}"
+    dest: "{{ sv_mariadb_cnf }}"
+
+- name: Configure ufw rules
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  with_items:
+    #- { rule: 'limit', port: '{{ ssh_port | default("22") }}', proto: 'tcp' }
+    - { rule: 'allow', port: '3306', proto: 'tcp' }
+    - { rule: 'allow', port: '4444', proto: 'tcp' }
+    - { rule: 'allow', port: '4567', proto: 'tcp' }
+    - { rule: 'allow', port: '4568', proto: 'tcp' }
+    - { rule: 'allow', port: '4567', proto: 'udp' }
+  notify:
+    - restart ufw
+        
+- name: Allow everything and enable UFW
+  ufw:
+    state: enabled
+    policy: allow
+
+- name: Stop service mariadb all node
+  service:
+      name: mysql
+      state: stopped
+
+- name: Start new galera cluster by master node
+  command: galera_new_cluster
+  #when: inventory_hostname in groups['mariadb-galera-cluster-master-1']
+
+- name: Create a user database for maxscale
+  mysql_user:
+    name: "{{ db_max_user }}"
+    password: "{{ db_max_passwd }}"
+    priv: "{{ grant }}"
+    host: "{{ anyhost }}"
+    state: present
+
+- name: Create a user database for wordpress
+  mysql_user:
+    name: "{{ db_wp_user }}"
+    password: "{{ db_wp_passwd }}"
+    priv: "{{ grant }}"
+    host: "{{ anyhost }}"
+    state: present
+
+- name: Create a new database for maxscale
+  mysql_db:
+    name: "{{ db_max_name }}"
+    state: present
+
+- name: Create a new database for wordpress
+  mysql_db:
+    name: "{{ db_wp_name }}"
+    state: present
+
+- name: Change a root password
+  mysql_user:
+    login_user: "{{ admin }}"
+    login_password: ""
+    name: "{{ admin }}"
+    host: "{{ lc }}"
+    password: "{{ admin_passwd }}"
+    priv: "{{ grant }}"
+  #when: mysql_user.login_password == ''
+
+# - debug:
+#     msg: "the root login_password is false"
+#   when: result.mysql_user.login_password != ''

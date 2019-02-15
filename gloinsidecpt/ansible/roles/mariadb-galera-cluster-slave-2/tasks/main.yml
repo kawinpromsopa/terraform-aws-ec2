@@ -1,0 +1,66 @@
+--- # tasks file for mariadb-galera-cluster
+
+- name: Add the mariaDB repository key
+  apt_key:
+    id: "{{ item }}"
+    keyserver: "{{ mariadb_apt_keys_sv }}"
+    state: "present"
+  with_items: "{{ mariadb_apt_keys }}"
+
+- name: Add the mariaDB repository and update the APT 
+  apt_repository:
+    repo: "{{ repos_packages }}"
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: Install mariadb-server
+  package:
+    name: "{{ packages }}"
+    state: present
+    update_cache: True
+    cache_valid_time: '{{ mariadb_apt_cache_time }}'
+
+- name: Copy Configuration for "mariadb.cnf" to servers
+  template:
+    src: "{{ lc_mariadb_cnf }}"
+    dest: "{{ sv_mariadb_cnf }}"
+
+- name: UFW allow 3306 port tcp 
+  ufw:
+    rule: allow
+    port: 3306
+    proto: tcp
+
+- name: UFW allow 4444 port tcp 
+  ufw:
+    rule: allow
+    port: 4444
+    proto: tcp
+
+- name: UFW allow 4567 port tcp 
+  ufw:
+    rule: allow
+    port: 4567
+    proto: tcp
+
+- name: UFW allow 4568 port tcp 
+  ufw:
+    rule: allow
+    port: 4568
+    proto: tcp
+        
+- name: Allow everything and enable UFW
+  ufw:
+    state: enabled
+    policy: allow
+
+- name: Restart service mariadb all node
+  service:
+      name: mysql
+      state: restarted
+
+#- name: Start new galera cluster by master node
+#  command: galera_new_cluster
+#  when: inventory_hostname in groups['galera-cluster-master-node']

@@ -37,40 +37,40 @@ variable "cachet_instances_type" {
 }
 
 variable "web_1_instances_type" {
-  default = "t2.small"
+  default = "t2.nano"
 } 
 
 variable "web_2_instances_type" {
-  default = "t2.small"
+  default = "t2.nano"
 } 
 
 variable "mariadb_1_instances_type" {
-  default = "t2.medium"
+  default = "t2.nano"
 } 
 
 variable "mariadb_2_instances_type" {
-  default = "t2.medium"
+  default = "t2.nano"
 } 
 
 variable "storage_instances_type" {
-  default = "t2.small"
+  default = "t2.nano"
 } 
 
 variable "db1_volume_size" {
-  default = "50"
+  default = "20"
 }
 
 variable "db2_volume_size" {
-  default = "50"
+  default = "20"
 }
 
 variable "storage_volume_size" {
-  default = "50"
+  default = "20"
 }
 
 variable "name" {
   # name of stage
-  default = "prod"
+  default = "dev"
 }
 
 variable "region" {
@@ -82,6 +82,6 @@ variable "availability_zone" {
 }
 
 variable "name_prefix" {
-  default     = "prod"
+  default     = "dev"
   description = "prefix of name tag"
 }

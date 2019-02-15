@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket = "terraform-state.prod"
+    bucket = "terraform-state.staging"
     region = "ap-southeast-1"
-    key    = "globalinsidecpt-prod.tfstate"
+    key    = "globalinsidecpt-staging.tfstate"
   }
 }
 
@@ -15,8 +15,8 @@ provider "aws" {
   alias  = "ap-southeast-1"
 }
 
-module "aboutopsio" {
-  source                      = "../modules"
+module "aboutopsio-staging" {
+  source                      = "./../../modules_staging"
   customer                    = "${local.customer}"
   region                      = "${var.region}"
   availability_zone           = "${var.availability_zone}"
