@@ -1,7 +1,7 @@
 # terraform-aws-ec2
 Provision EC2 (AWS) with Terraform
 
-- [Terraform](https://www.terraform.io/downloads.html) version 0.11.7
+* [Terraform](https://www.terraform.io/downloads.html) version 0.11.7
 
 # Deployment 
 Create a workspace for separate Customer following: 
@@ -24,15 +24,15 @@ Create a workspace for separate Customer following:
 ###################
 ### ebs_snapshot.sh
 ###################
-
+```
 #!/bin/bash
 PATH="/usr/local/bin:$PATH"
 aws ec2 create-snapshot --volume-id <volume-id> --tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value=<name-of-volume>}]'
-
+```
 ########################
 ### mysql_dump_master.sh
 ########################
-
+```
 #!/bin/bash
 time="$(date '+%d-%m-%Y-%H:%M')"
 
@@ -43,12 +43,11 @@ sleep 10
 find /home/ubuntu/db_master_bak/*.sql -mmin -1 -exec scp "-P 2242" {} root@159.65.11.122:/home/backup/db_master_bak  \;
 sleep 25
 find /home/ubuntu/db_master_bak/*.sql -mmin -1 -exec scp "-P 2242" {} root@159.89.207.235:/home/backup/db_master_bak  \;
-
-
+```
 #######################
 ### mysql_dump_slave.sh
 #######################
-
+```
 #!/bin/bash
 time="$(date '+%d-%m-%Y-%H:%M')"
 
@@ -59,26 +58,27 @@ sleep 10
 find /home/ubuntu/db_slave_bak/*.sql -mmin -1 -exec scp "-P 2242" {} root@159.65.11.122:/home/backup/db_slave_bak  \;
 sleep 25
 find /home/ubuntu/db_slave_bak/*.sql -mmin -1 -exec scp "-P 2242" {} root@159.89.207.235:/home/backup/db_slave_bak  \;
-
+```
 ####################
 ### rotate_master.sh
 ####################
-
+```
 #!/bin/bash
 
 find /home/ubuntu/db_master_bak -mmin +10080 -exec rm -rf {} \;
 
-
+```
 ####################
 ### rotate_slave.sh
 ####################
-
+```
 #!/bin/bash
 
 find /home/ubuntu/db_slave_bak -mmin +10080 -exec rm -rf {} \;
-
+```
 #############################
 ### cronjob every run on 3 am
 #############################
-
+```
 00 20  * * *    root    /bin/sh /root/mysqldump_master.sh
+```
