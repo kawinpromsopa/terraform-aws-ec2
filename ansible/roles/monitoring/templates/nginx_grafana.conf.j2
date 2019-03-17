@@ -1,0 +1,13 @@
+server {
+  listen 80;
+  server_name {{ grafana_domain }};
+
+  if ($http_x_forwarded_proto = 'http') {
+    return 301 https://$host$request_uri;
+  }
+  location / {
+    access_log /var/log/nginx/grafana_access.log;
+    error_log /var/log/nginx/grafana_error.log;
+    proxy_pass http://localhost:3000;
+  }
+}

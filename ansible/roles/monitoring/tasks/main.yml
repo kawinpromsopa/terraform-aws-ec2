@@ -1,0 +1,43 @@
+- name: install required dependencies
+  pip:
+    name: passlib
+    executable: pip2
+  become: yes
+
+- name: create dir for monitoring docker-compose
+  file:
+    path: "{{ monitoring_project_path }}"
+    state: directory
+
+- include_tasks: grafana.yml
+- include_tasks: prometheus.yml
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ monitoring_project_path }}/docker-compose.yml"
+
+- name: start monitoring services
+  docker_service:
+    project_src: "{{ monitoring_project_path }}"
+
+- name: copy nginx
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  notify: reload nginx
+  with_items:
+    - {src: 'nginx_grafana.conf.j2', dest: '/etc/nginx/sites-enabled/grafana.conf'}
+    - {src: 'nginx_prometheus.conf.j2', dest: '/etc/nginx/sites-enabled/prometheus.conf'}
+  become: yes
+
+- name: copy htpasswd
+  htpasswd:
+    path: /etc/nginx/prometheus.htpasswd
+    mode: 0640
+    owner: root
+    group: www-data
+    name: "{{ monitoring_username }}"
+    password: "{{ monitoring_password }}"
+  notify: reload nginx
+  become: yes

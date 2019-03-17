@@ -1,0 +1,296 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+rule_files:
+  - "/rule_files/*.yml"
+
+scrape_configs:
+  - job_name: node_exporter
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9100
+        filters: &node_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - http_server
+              - http_asg_server
+              - elasticsearch_server
+              - kms_server
+              - db_server
+      - region: eu-west-2
+        port: 9100
+        filters: *node_filters
+    relabel_configs: &eko_relabels_with_versions
+      - source_labels: [__address__, __meta_ec2_public_ip]
+        regex: .*:(\d+);(.*)
+        replacement: '${2}:${1}'
+        target_label: __address__
+      - source_labels: [__meta_ec2_tag_Customer]
+        target_label: customer
+      - source_labels: [__meta_ec2_tag_Backend_Revision]
+        target_label: ekonode
+      - source_labels: [__meta_ec2_tag_EkoNode]
+        regex: (.+)
+        target_label: ekonode
+      - source_labels: [__meta_ec2_tag_EkoIDMAPI]
+        target_label: ekoidmapi
+      - source_labels: [__meta_ec2_tag_Admin_Revision]
+        target_label: ekonetworkadmin
+      - source_labels: [__meta_ec2_tag_EkoNetworkAdmin]
+        regex: (.+)
+        target_label: ekonetworkadmin
+      - source_labels: [__meta_ec2_tag_EkoAPI2]
+        target_label: ekoapi2
+      - source_labels: [__meta_ec2_tag_EkoReseller]
+        target_label: ekoreseller
+      - source_labels: [__meta_ec2_tag_Type]
+        regex: (.*)_server
+        replacement: '${1}'
+        action: replace
+        target_label: server_type
+      - source_labels: [__meta_ec2_tag_Customer, server_type]
+        regex: (.*);(.*)
+        replacement: '${1}-${2}'
+        target_label: instance
+      - source_labels: [__meta_ec2_tag_Customer, server_type, __meta_ec2_tag_aws_autoscaling_groupName, __meta_ec2_instance_id]
+        regex: (.+);(.+);(.+);(.+)
+        replacement: '${1}-${2}-${4}'
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_type]
+        regex: (.+)
+        target_label: instance_type
+      - source_labels: [__meta_ec2_instance_state]
+        regex: stopped
+        action: drop
+
+  - job_name: mongodb_exporter
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9216
+        filters: &mongodb_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - db_server
+              - kms_server
+      - region: eu-west-2
+        port: 9216
+        filters: *mongodb_filters
+    relabel_configs: &eko_relabels
+      - source_labels: [__address__, __meta_ec2_public_ip]
+        regex: .*:(\d+);(.*)
+        replacement: '${2}:${1}'
+        target_label: __address__
+      - source_labels: [__meta_ec2_tag_Customer]
+        target_label: customer
+      - source_labels: [__meta_ec2_tag_Type]
+        regex: (.*)_server
+        replacement: '${1}'
+        action: replace
+        target_label: server_type
+      - source_labels: [__meta_ec2_tag_Customer, server_type]
+        regex: (.*);(.*)
+        replacement: '${1}-${2}'
+        target_label: instance
+      - source_labels: [__meta_ec2_tag_Customer, server_type, __meta_ec2_tag_aws_autoscaling_groupName, __meta_ec2_instance_id]
+        regex: (.+);(.+);(.+);(.+)
+        replacement: '${1}-${2}-${4}'
+        target_label: instance
+      - source_labels: [__meta_ec2_instance_state]
+        regex: stopped
+        action: drop
+
+  - job_name: 'redis_exporter'
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9121
+        filters: &redis_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - db_server
+      - region: eu-west-2
+        port: 9121
+        filters: *redis_filters
+    relabel_configs: *eko_relabels
+
+  - job_name: 'rabbitmq_exporter'
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9419
+        filters: &rabbitmq_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - db_server
+      - region: eu-west-2
+        port: 9419
+        filters: *rabbitmq_filters
+    relabel_configs: *eko_relabels
+
+  - job_name: elasticsearch_exporter
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9108
+        filters: &elasticsearch_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - elasticsearch_server
+      - region: eu-west-2
+        port: 9108
+        filters: *elasticsearch_filters
+    relabel_configs: *eko_relabels
+
+  - job_name: eko_exporter
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 24231
+        filters: &http_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - http_server
+      - region: eu-west-2
+        port: 24231
+        filters: *http_filters
+    relabel_configs: *eko_relabels
+
+  - job_name: cpc_exporter
+    static_configs:
+      - targets:
+          - 54.223.140.214:8900
+          - 54.223.140.214:9100
+          - 54.223.140.214:9487
+          - 54.223.140.214:24231
+        labels:
+          server_type: http
+          instance: cpc-http
+      - targets:
+          - 54.223.225.114:9216
+          - 54.223.225.114:9100
+          - 54.223.225.114:9121
+          - 54.223.225.114:9419
+        labels:
+          server_type: db
+          instance: cpc-db
+      - targets:
+          - 52.80.8.121:9100
+          - 52.80.8.121:9216
+        labels:
+          server_type: kms
+          instance: cpc-kms
+      - targets:
+          - 54.222.219.95:9100
+          - 54.222.219.95:9108
+        labels:
+          server_type: elasticsearch
+          instance: cpc-elasticsearch
+    relabel_configs:
+      - replacement: cpc
+        target_label: customer
+
+  - job_name: sns_exporter
+    static_configs:
+      - targets: [sns_exporter:3000]
+
+  - job_name: idmapi
+    scheme: https
+    params:
+      secret: ['2a78335949f22c62437b1b733d3522cfa21937d90390ce2fa79b843a23e00f5e']
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        filters:
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - http_server
+          - name: tag:UseIDMAPI
+            values:
+              - "true"
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Customer]
+        regex: (.+)
+        replacement: '${1}-idmapi-admin.ekoapp.com'
+        target_label: __address__
+      - source_labels: [__meta_ec2_tag_Customer]
+        target_label: customer
+
+  - job_name: cadvisor
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9487
+        filters: &http_queue_filters
+          - name: tag:Customer
+            values:
+              - "*"
+          - name: tag:Type
+            values:
+              - http_server
+              - elasticsearch_server
+      - region: eu-west-2
+        port: 9487
+        filters: *http_queue_filters
+    relabel_configs: *eko_relabels
+    metric_relabel_configs:
+      - source_labels: [container_label_com_docker_compose_project]
+        regex: .+
+        action: keep
+      - source_labels: [__name__]
+        regex: container_(cpu|memory)_.+
+        action: keep
+
+  - job_name: cloudwatch_exporter
+    static_configs:
+{% for region in cloudwatchexporter_regions %}
+      - targets:
+          - cloudwatch_exporter_{{ region }}:9106
+        labels:
+          region: {{ region }}
+{% endfor %}
+
+  - job_name: eko_component_health
+    scrape_interval: 1m
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 8900
+        filters: *http_filters
+      - region: eu-west-2
+        port: 8900
+        filters: *http_filters
+    relabel_configs: *eko_relabels
+
+  - job_name: node_exporter_ekomonitoring
+    scrape_interval: 1m
+    ec2_sd_configs:
+      - region: ap-southeast-1
+        port: 9100
+        filters:
+          - name: tag:Project
+            values:
+              - ekomonitoring
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Project]
+        target_label: project

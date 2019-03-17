@@ -1,0 +1,30 @@
+- name: copy prometheus config files
+  template:
+    src: "{{ item.src }}"
+    dest : "{{ item.dest }}"
+  with_items:
+    - { src: "prometheus.yml.j2", dest: "{{ monitoring_project_path }}/prometheus.yml" }
+    - { src: "rules.yml.j2", dest: "{{ monitoring_project_path }}/rules.yml" }
+    - { src: "alertmanager.yml.j2", dest: "{{ monitoring_project_path }}/alertmanager.yml" }
+    - { src: "blackbox_exporter.yml.j2", dest: "{{ monitoring_project_path }}/blackbox_exporter.yml" }
+  notify: restart prometheus
+
+- name: copy alertmanager config files
+  template:
+    src: alertmanager.yml.j2
+    dest: "{{ monitoring_project_path }}/alertmanager.yml"
+  notify: restart alertmanager
+
+- name: copy blackbox_exporter config files
+  template:
+    src: blackbox_exporter.yml.j2
+    dest: "{{ monitoring_project_path }}/blackbox_exporter.yml"
+  notify: restart blackbox_exporter
+
+- name: create prometheus data path
+  file:
+    path: "{{ prometheus_data_path }}"
+    state: directory
+    owner: 65534
+    group: 65534
+  become: yes

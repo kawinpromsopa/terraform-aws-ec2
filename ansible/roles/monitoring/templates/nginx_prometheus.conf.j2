@@ -1,0 +1,30 @@
+server {
+  listen 80;
+  server_name {{ prometheus_domain }};
+
+  if ($http_x_forwarded_proto = 'http') {
+    return 301 https://$host$request_uri;
+  }
+  auth_basic "Prometheus";
+  auth_basic_user_file /etc/nginx/prometheus.htpasswd;
+  location / {
+    access_log /var/log/nginx/prometheus_access.log;
+    error_log /var/log/nginx/prometheus_error.log;
+    proxy_pass http://localhost:9090;
+  }
+}
+server {
+  listen 80;
+  server_name {{ alertmanager_domain }};
+
+  if ($http_x_forwarded_proto = 'http') {
+    return 301 https://$host$request_uri;
+  }
+  auth_basic "Prometheus";
+  auth_basic_user_file /etc/nginx/prometheus.htpasswd;
+  location / {
+    access_log /var/log/nginx/alertmanager_access.log;
+    error_log /var/log/nginx/alertmanager_error.log;
+    proxy_pass http://localhost:9093;
+  }
+}

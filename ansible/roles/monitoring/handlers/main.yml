@@ -1,0 +1,29 @@
+- name: restart prometheus
+  docker_service:
+    project_src: "{{ monitoring_project_path }}"
+    services: prometheus
+    restarted: yes
+
+- name: restart grafana
+  docker_service:
+    project_src: "{{ monitoring_project_path }}"
+    services: grafana
+    restarted: yes
+
+- name: restart alertmanager
+  docker_service:
+    project_src: "{{ monitoring_project_path }}"
+    services: alertmanager
+    restarted: yes
+
+- name: restart blackbox_exporter
+  docker_service:
+    project_src: "{{ monitoring_project_path }}"
+    services: blackbox_exporter
+    restarted: yes
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+  become: yes

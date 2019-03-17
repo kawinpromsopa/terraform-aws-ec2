@@ -1,0 +1,43 @@
+version: '3'
+services:
+  grafana:
+    image: grafana/grafana:5.3.1
+    environment:
+      - GF_SECURITY_ADMIN_USER={{ monitoring_username }}
+      - GF_SECURITY_ADMIN_PASSWORD={{ monitoring_password }}
+      - GF_SERVER_ROOT_URL=https://{{ grafana_domain }}
+      - GF_USERS_DEFAULT_THEME=light
+    ports:
+      - 127.0.0.1:3000:3000
+    restart: unless-stopped
+    volumes:
+      - {{ grafana_data_path }}:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+  prometheus:
+    image: prom/prometheus:v2.3.0
+    ports:
+      - 127.0.0.1:9090:9090
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention=90d
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - {{ prometheus_data_path }}:/prometheus
+      - ./rules.yml:/rule_files/rules.yml:ro
+  blackbox_exporter:
+    image: prom/blackbox-exporter:v0.14.0
+    restart: unless-stopped
+    volumes:
+      - ./blackbox_exporter.yml:/etc/blackbox_exporter/config.yml:ro
+  alertmanager:
+    image: prom/alertmanager:v0.15.0
+    ports:
+      - 127.0.0.1:9093:9093
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    restart: unless-stopped

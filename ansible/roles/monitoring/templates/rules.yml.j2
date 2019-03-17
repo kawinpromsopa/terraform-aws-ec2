@@ -1,0 +1,98 @@
+groups:
+  - name: node
+    rules:
+      - alert: LowDiskSpace
+        expr: |
+          min by(instance, mountpoint) (
+            node_filesystem_avail_bytes{mountpoint=~"/|/data"}
+            /
+            node_filesystem_size_bytes{mountpoint=~"/|/data"}
+          ) * 100 < 10
+        for: 5m
+        annotations:
+          summary: "{% raw %}{{ $labels.instance }}\nDisk space [{{ $labels.mountpoint }}] {{ $value | printf \"%.0f\" }}%{% endraw %}"
+      - alert: HighCPU
+        expr: |
+          (1 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle", server_type!="elasticsearch"}[5m])))) * 100
+          > 50
+        for: 3m
+        annotations:
+          summary: "{% raw %}{{ $labels.instance }}\nCPU {{ $value | printf \"%.0f\" }}%{% endraw %}"
+        # separate elasticsearch because the alerts will fired every time AD sync is running
+      - alert: HighCPUElasticsearch
+        expr: |
+          (1 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle", server_type="elasticsearch"}[5m])))) * 100
+          > 70
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.instance }}\nCPU {{ $value | printf \"%.0f\" }}%{% endraw %}"
+      - alert: HighMemory
+        expr: |
+          avg by(instance) (1-node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes)*100
+          > 85
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.instance }}\nMemory {{ $value | printf \"%.0f\" }}%{% endraw %}"
+      - alert: MessageStuckInQueue
+        expr: rabbitmq_queue_messages > 0 and ON(customer, queue) rate(rabbitmq_queue_messages_delivered_total[5m]) == 0
+        for: 20m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }}\nQueue: {{ $labels.queue }} ({{ $value }}){% endraw %}"
+      - alert: SlowAverageRPC
+        expr: |
+          sum by (customer) (rate(eko_rpc_duration_ms_sum[5m]))
+          /
+          sum by (customer) (rate(eko_rpc_duration_ms_count[5m]))
+          > 5000
+        for: 3m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }}\navg rpc dur > 5s{% endraw %}"
+      - alert: DifferentEkoNodeVersion
+        expr: count by (customer) (count by (customer, ekonode) (up{server_type=~"http|elasticsearch", ekonode=~".+"})) > 1
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }} has multiple versions of EkoNode{% endraw %}"
+      - alert: DifferentEkoNetworkAdminVersion
+        expr: count by (customer) (count by (customer, ekonetworkadmin) (up{server_type=~"http|elasticsearch", ekonetworkadmin=~".+"})) > 1
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }} has multiple versions of EkoNetworkAdmin{% endraw %}"
+      - alert: IOSCertExpireSoon
+        expr: floor((eko_sns_cert_expiry{enabled="true", arn!~".*-qa"} - time()) / 86400) < 14
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.arn }} will expire in {{ $value }} days{% endraw %}"
+      - alert: EkoADCDown
+        expr: eko_adc_up == 0
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }} (domain: {{ $labels.domain }})\nIDMAPI cannot connect to EkoADC{% endraw %}"
+      - alert: EC2InstanceStatusCheckFailed
+        expr: aws_ec2_status_check_failed_instance_maximum == 1
+        for: 5m
+        annotations:
+          summary: "{% raw %}Instance Status Check Failed\ninstance: {{ $labels.instance_id }}, region: {{ $labels.region }}{% endraw %}"
+      - alert: EC2SystemSystemCheckFailed
+        expr: aws_ec2_status_check_failed_system_maximum == 1
+        for: 5m
+        annotations:
+          summary: "{% raw %}System Status Check Failed\ninstance: {{ $labels.instance_id }}, region: {{ $labels.region }}{% endraw %}"
+      - alert: DifferentOplogIndexVersion
+        expr: eko_oplog_mongo_index_version != eko_oplog_elasticsearch_index_version
+        for: 30m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }}\nhas different index version on {{ $labels.index }} index{% endraw %}"
+      - alert: SNSAppMissing
+        expr: eko_has_sns_app{arn_name!~".*-qa"} == 0
+        for: 10m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }}\ndoes not have SNS app {{ $labels.arn_name }} for appId: {{ $labels.app_id }}{% endraw %}"
+      - alert: NewMessagesNotInES
+        expr: |
+          label_replace(eko_mongo_last_object_time_seconds, "index", "$1", "collection", "(.*)")
+          -
+          ignoring(collection) eko_elasticsearch_last_doc_time_seconds{index="messages"}
+          > 300
+        for: 1m
+        annotations:
+          summary: "{% raw %}{{ $labels.customer }}\nNew messages are not getting saved to ES ({{ $value | printf \"%.0f\" }}s diff){% endraw %}"

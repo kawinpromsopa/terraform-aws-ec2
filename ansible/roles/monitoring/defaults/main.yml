@@ -1,0 +1,17 @@
+monitoring_project_path: ~/monitoring
+monitoring_ec2_name_prefix: aboutops.io-
+monitoring_username: admin
+monitoring_password: 9S2cP86D5Iyu
+
+grafana_data_path: /data/grafana
+grafana_domain: localhost
+
+prometheus_data_path: /data/prometheus
+prometheus_domain: localhost
+
+api_domain: localhost
+admin_domain: localhost
+
+display_name: ekosdk
+alert_workspace_id: 5af2827924e80dd10100614c
+alert_topic_id: 5af2827924e80d128a00614d
