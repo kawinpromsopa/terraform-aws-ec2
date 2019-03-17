@@ -1,0 +1,7 @@
+- name: copy cloudwatchexporter config files
+  template:
+    src: cloudwatchexporter.yml.j2
+    dest: "{{ monitoring_project_path }}/cloudwatchexporter-{{ item }}.yml"
+  vars:
+    region: "{{ item }}"
+  with_items: "{{ cloudwatchexporter_regions }}"

@@ -1,0 +1,12 @@
+- name: copy service file for node exporter
+  template:
+    src: node_exporter.conf
+    dest: /etc/init/node_exporter.conf
+  become: yes
+
+- name: start node exporter
+  service:
+    name: node_exporter
+    state: started
+    enabled: yes
+  become: yes

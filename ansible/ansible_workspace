@@ -1,25 +1,25 @@
 #!/bin/bash
 
 set -xe
-[ -z "$2" ] && echo "Usage: ./ansible_workspace <env-stage> <workspace-name> <playbook.yml>" && exit 1
+[ -z "$2" ] && echo "Usage: ./ansible_workspace <globalinsidecpt> <workspace-name> <playbook.yml>" && exit 1
 
 # get terraform state from remote storage and select workspace
 pushd ../"$1"
 shift
 WORKSPACE=$1
 shift
+pushd "$WORKSPACE"
 [ `terraform workspace show` != "$WORKSPACE" ] && terraform workspace select "$WORKSPACE"
 terraform state pull > terraform.tfstate
 export TF_STATE="$(pwd)/terraform.tfstate"
 
-EXTRA_VARS="$(terraform output | sed 's/ = /=/g' | tr '\n' ' ')"
-popd
+#EXTRA_VARS="$(terraform output | sed 's/ = /=/g' | tr '\n' ' ')"
 
+popd
 PLAYBOOK="$1"
-shift
+cd ../ansible
 
 # for migration
 # EXTRA_VARS=$(sed 's/newfitconnect/fitconnect/g' <<< $EXTRA_VARS)
 
 ansible-playbook -i `which terraform-inventory` "$PLAYBOOK" "$@" # --extra-vars "$EXTRA_VARS" "$@"
-

@@ -1,0 +1,16 @@
+---
+region: {{ region }}
+set_timestamp: false
+metrics:
+ - aws_namespace: AWS/EC2
+   aws_metric_name: StatusCheckFailed
+   aws_dimensions: [InstanceId]
+   aws_statistics: [Maximum]
+ - aws_namespace: AWS/EC2
+   aws_metric_name: StatusCheckFailed_Instance
+   aws_dimensions: [InstanceId]
+   aws_statistics: [Maximum]
+ - aws_namespace: AWS/EC2
+   aws_metric_name: StatusCheckFailed_System
+   aws_dimensions: [InstanceId]
+   aws_statistics: [Maximum]

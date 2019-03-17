@@ -1,0 +1,9 @@
+- hosts: monitoring
+  roles:
+    - node_exporter
+    - volume_mount
+    - nginx
+    - monitoring
+  vars:
+    volume_mounts:
+      - {'device': '/dev/nvme1n1', 'path': '/data', 'fstype': 'ext4'}

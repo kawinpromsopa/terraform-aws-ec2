@@ -9,9 +9,11 @@ grafana_domain: localhost
 prometheus_data_path: /data/prometheus
 prometheus_domain: localhost
 
+alertmanager_domain: localhost
+
 api_domain: localhost
 admin_domain: localhost
 
-display_name: ekosdk
-alert_workspace_id: 5af2827924e80dd10100614c
-alert_topic_id: 5af2827924e80d128a00614d
+cloudwatchexporter_regions:
+  - ap-southeast-1
+

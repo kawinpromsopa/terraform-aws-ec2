@@ -1,0 +1,13 @@
+- name: copy service file for node exporter
+  template:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+  become: yes
+
+- name: start node exporter
+  service:
+    name: node_exporter
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  become: yes
