@@ -1,0 +1,19 @@
+- hosts: web1
+  roles:
+    - node_exporter
+
+- hosts: web2
+  roles:
+    - node_exporter
+
+- hosts: db1
+  roles:
+    - node_exporter
+
+- hosts: db2
+  roles:
+    - node_exporter
+
+- hosts: storage
+  roles:
+    - node_exporter

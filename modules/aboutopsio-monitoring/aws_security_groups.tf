@@ -32,7 +32,7 @@ resource "aws_security_group" "monitoring" {
     from_port       = 80
     to_port         = 80
     protocol        = "TCP"
-    security_groups = ["${aws_security_group.alb.id}"]
+    security_groups = ["0.0.0.0/0"]
   }
 }
 

@@ -4,12 +4,12 @@ monitoring_username: admin
 monitoring_password: 9S2cP86D5Iyu
 
 grafana_data_path: /data/grafana
-grafana_domain: localhost
+grafana_domain: grafana.globalinsidecpt.com
 
 prometheus_data_path: /data/prometheus
-prometheus_domain: localhost
+prometheus_domain: prometheus.globalinsidecpt.com
 
-alertmanager_domain: localhost
+alertmanager_domain: alertmanager.globalinsidecpt.com
 
 api_domain: localhost
 admin_domain: localhost
@@ -17,3 +17,4 @@ admin_domain: localhost
 cloudwatchexporter_regions:
   - ap-southeast-1
 
+line_token: psxMrbzyzlEvhAyejeh8g731jQMQxD34EiH8Izfc2iO
